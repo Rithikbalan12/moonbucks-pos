@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOONBUCKS - POS Terminal</title>
+  
+  <!-- Modern Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ----------------------------------------------------
+       1. DESIGN SYSTEM & VARIABLE DEFINITIONS
+       ---------------------------------------------------- */
+    :root {
+      --primary: #C97A53;       /* Warm Terracotta Accent */
+      --primary-dark: #A85F3B;  /* Deep Terracotta for Hover */
+      --primary-light: #F7EDE8; /* Very Light Peach/Terracotta for active pills */
+      --secondary: #2E1E1E;     /* Deep Espresso Charcoal */
+      --background: #FAF6F0;    /* Warm Toasted Cream */
+      --card-bg: #FFFFFF;       /* Pure White Cards */
+      --text-dark: #2D2D2D;     /* Dark Charcoal Text */
+      --text-light: #707070;    /* Muted Slate Gray Text */
+      --border: #EAE3D8;        /* Soft Warm Border */
+      --border-focus: #C97A53;  /* Primary Border on Focus */
+      --success: #5F8C62;       /* Soft Olive/Sage Green */
+      --success-light: #EEF4EF;
+      --danger: #CD5C5C;        /* Warm Rust Red */
+      --danger-light: #FBEFEE;
+      --shadow-sm: 0 2px 8px rgba(46, 30, 30, 0.04);
+      --shadow-md: 0 8px 24px rgba(46, 30, 30, 0.06);
+      --shadow-lg: 0 16px 40px rgba(46, 30, 30, 0.12);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --font-main: 'Outfit', sans-serif;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Reset & Base Rules */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--background);
+      color: var(--text-dark);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    button, input, select {
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #DDD5C7;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #C0B7A8;
+    }
+
+    /* ----------------------------------------------------
+       2. TYPOGRAPHY & LAYOUT UTILITIES
+       ---------------------------------------------------- */
+    h1, h2, h3, h4 {
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ----------------------------------------------------
+       3. NAVIGATION & HEADER
+       ---------------------------------------------------- */
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      background: var(--primary);
+      color: white;
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-logo svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-tagline {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: -2px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      background: var(--background);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      gap: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .nav-tab {
+      border: none;
+      background: transparent;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--text-light);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .nav-tab svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .nav-tab.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-tab:hover:not(.active) {
+      color: var(--text-dark);
+      background: rgba(226, 218, 204, 0.4);
+    }
+
+    /* ----------------------------------------------------
+       4. POS TERMINAL VIEW LAYOUT
+       ---------------------------------------------------- */
+    main {
+      padding: 24px 0 60px 0;
+    }
+
+    .pos-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* Filter & Search Bar */
+    .filter-search-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 14px;
+      width: 20px;
+      height: 20px;
+      color: var(--text-light);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 16px 12px 46px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background-color: var(--background);
+      color: var(--text-dark);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      border-color: var(--border-focus);
+      background-color: var(--card-bg);
+      box-shadow: 0 0 0 3px rgba(201, 122, 83, 0.15);
+    }
+
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .category-btn {
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-light);
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .category-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .category-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(201, 122, 83, 0.25);
+    }
+
+    /* Menu Grid */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 20px;
+    }
+
+    .menu-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .menu-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(201, 122, 83, 0.3);
+    }
+
+    .card-img-container {
+      width: 100%;
+      height: 150px;
+      overflow: hidden;
+      background: #ECE5DA;
+      position: relative;
+    }
+
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+
+    .menu-card:hover .card-img {
+      transform: scale(1.06);
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(46, 30, 30, 0.75);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      backdrop-filter: blur(4px);
+    }
+
+    .card-details {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--secondary);
+    }
+
+    .card-price {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .btn-add {
+      background: var(--primary-light);
+      border: 1px solid rgba(201, 122, 83, 0.2);
+      color: var(--primary);
+      width: 100%;
+      padding: 8px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .btn-add:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 4px 10px rgba(201, 122, 83, 0.2);
+    }
+
+    .btn-add svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* No items state */
+    .empty-state {
+      grid-column: 1 / -1;
+      background: var(--card-bg);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      text-align: center;
+      color: var(--text-light);
+    }
+
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 12px;
+      color: #DDD5C7;
+    }
+
+    /* ----------------------------------------------------
+       5. STICKY CART PANEL
+       ---------------------------------------------------- */
+    .cart-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 94px;
+      max-height: calc(100vh - 120px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .cart-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FDFBFAF;
+    }
+
+    .cart-header h3 {
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cart-header h3 svg {
+      width: 20px;
+      height: 20px;
+      color: var(--primary);
+    }
+
+    .cart-badge-count {
+      background: var(--primary);
+      color: white;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .cart-items {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 180px;
+    }
+
+    /* Cart item card styling */
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(234, 227, 216, 0.6);
+      gap: 8px;
+      animation: slideIn 0.2s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .cart-item-info {
+      flex-grow: 1;
+      max-width: 55%;
+    }
+
+    .cart-item-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cart-item-price {
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    .cart-item-total {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--secondary);
+      min-width: 60px;
+      text-align: right;
+    }
+
+    .cart-qty-ctrl {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--background);
+    }
+
+    .qty-btn {
+      border: none;
+      background: transparent;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-light);
+      transition: var(--transition);
+    }
+
+    .qty-btn:hover {
+      background: var(--border);
+      color: var(--text-dark);
+    }
+
+    .qty-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .qty-val {
+      width: 24px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .cart-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+      text-align: center;
+      color: var(--text-light);
+      gap: 8px;
+      flex-grow: 1;
+    }
+
+    .cart-empty svg {
+      width: 42px;
+      height: 42px;
+      color: #E2DACB;
+    }
+
+    .cart-footer {
+      border-top: 1px solid var(--border);
+      padding: 16px;
+      background: #FAF9F6;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bill-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .bill-row.grand-total {
+      border-top: 1px dashed var(--border);
+      padding-top: 10px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .cart-actions {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn-clear {
+      border: 1px solid var(--danger);
+      background: transparent;
+      color: var(--danger);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .btn-clear:hover {
+      background: var(--danger-light);
+    }
+
+    .btn-clear svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .btn-pay {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(201, 122, 83, 0.2);
+    }
+
+    .btn-pay:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 6px 16px rgba(201, 122, 83, 0.3);
+    }
+
+    .btn-pay:disabled {
+      background: #DDD5C7;
+      color: #FAF9F6;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .btn-pay svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* ----------------------------------------------------
+       6. MANAGE MENU VIEW (CRUD PANEL)
+       ---------------------------------------------------- */
+    .crud-layout {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .crud-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .crud-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    .crud-card h3 svg {
+      width: 20px;
+      height: 20px;
+      color: var(--primary);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background-color: var(--background);
+      outline: none;
+      transition: var(--transition);
+      color: var(--text-dark);
+    }
+
+    .form-control:focus {
+      border-color: var(--border-focus);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(201, 122, 83, 0.12);
+    }
+
+    .image-preview-container {
+      width: 100%;
+      height: 120px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-md);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--background);
+    }
+
+    .image-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-preview-placeholder {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .image-preview-placeholder svg {
+      width: 24px;
+      height: 24px;
+      color: #DDD5C7;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .btn-submit {
+      flex: 2;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-cancel {
+      flex: 1;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-light);
+      padding: 10px;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-cancel:hover {
+      background: var(--background);
+      color: var(--text-dark);
+    }
+
+    /* Item Management List / Table */
+    .table-container {
+      overflow-x: auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .crud-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .crud-table th, .crud-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .crud-table th {
+      background: #FDFBFA;
+      font-weight: 600;
+      color: var(--secondary);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .crud-table tbody tr:hover {
+      background-color: rgba(250, 246, 240, 0.5);
+    }
+
+    .table-img {
+      width: 44px;
+      height: 44px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background-color: var(--background);
+    }
+
+    .table-price {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .action-btn-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .action-btn {
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .action-btn.edit-btn {
+      background: rgba(201, 122, 83, 0.1);
+      color: var(--primary);
+    }
+
+    .action-btn.edit-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .action-btn.delete-btn {
+      background: rgba(205, 92, 92, 0.1);
+      color: var(--danger);
+    }
+
+    .action-btn.delete-btn:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    .action-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ----------------------------------------------------
+       7. PAYMENT & RECEIPT MODAL
+       ---------------------------------------------------- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(46, 30, 30, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-wrapper {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 460px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-overlay.active .modal-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FDFBFA;
+    }
+
+    .modal-header h3 {
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-header h3 svg {
+      width: 22px;
+      height: 22px;
+      color: var(--primary);
+    }
+
+    .btn-close-modal {
+      background: transparent;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-close-modal:hover {
+      background: var(--background);
+      color: var(--text-dark);
+    }
+
+    .btn-close-modal svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .modal-body {
+      padding: 20px;
+      max-height: calc(80vh - 120px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* QR Code Display */
+    .qr-container {
+      background: #FAF8F5;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .qr-code-img {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+      background-color: white;
+    }
+
+    .qr-text {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Modal Bill Break-down (Interactive mini-receipt) */
+    .checkout-bill-preview {
+      width: 100%;
+      background: #FAF9F6;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #333333;
+    }
+
+    .checkout-bill-header {
+      text-align: center;
+      margin-bottom: 12px;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 10px;
+    }
+
+    .checkout-bill-title {
+      font-weight: bold;
+      font-size: 1rem;
+      text-transform: uppercase;
+    }
+
+    .checkout-bill-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2px;
+      color: var(--text-light);
+    }
+
+    .checkout-bill-items {
+      margin-bottom: 12px;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 10px;
+    }
+
+    .checkout-bill-item-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .checkout-bill-totals {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .checkout-bill-total-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .checkout-bill-total-row.grand {
+      font-weight: bold;
+      font-size: 0.95rem;
+      margin-top: 4px;
+      border-top: 1px dotted var(--border);
+      padding-top: 4px;
+    }
+
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      background: #FDFBFA;
+    }
+
+    .btn-modal-action {
+      padding: 10px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .btn-modal-action.primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+    }
+
+    .btn-modal-action.primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-modal-action.secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dark);
+    }
+
+    .btn-modal-action.secondary:hover {
+      background: var(--background);
+    }
+
+    .btn-modal-action svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* ----------------------------------------------------
+       8. TOAST NOTIFICATIONS
+       ---------------------------------------------------- */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1100;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      background: var(--secondary);
+      color: white;
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.25);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    @keyframes toastIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .toast.success {
+      background: var(--success);
+    }
+
+    .toast.danger {
+      background: var(--danger);
+    }
+
+    .toast svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    /* ----------------------------------------------------
+       9. RESPONSIVE MEDIA QUERIES (DESKTOP/TABLET/MOBILE)
+       ---------------------------------------------------- */
+    @media (max-width: 992px) {
+      .pos-layout {
+        grid-template-columns: 1fr;
+      }
+      .cart-panel {
+        position: static;
+        max-height: none;
+      }
+      .crud-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .header-content {
+        flex-direction: column;
+        height: auto;
+        padding: 16px 0;
+        gap: 12px;
+      }
+      .nav-tabs {
+        width: 100%;
+      }
+      .nav-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 10px;
+        font-size: 0.85rem;
+      }
+      .filter-search-container {
+        padding: 12px;
+        border-radius: var(--radius-md);
+      }
+      .category-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+      }
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+      .modal-wrapper {
+        width: 95%;
+      }
+      .modal-footer {
+        grid-template-columns: 1fr;
+      }
+      .toast-container {
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+      }
+    }
+
+    /* ----------------------------------------------------
+       10. THERMAL RECEIPT PRINT LAYOUT (HIDDEN ON SCREEN)
+       ---------------------------------------------------- */
+    #print-receipt-area {
+      display: none;
+    }
+
+    @media print {
+      /* Hide everything on the screen */
+      body * {
+        visibility: hidden;
+      }
+      /* Show only print receipt container and its children */
+      #print-receipt-area, #print-receipt-area * {
+        visibility: visible;
+      }
+      #print-receipt-area {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 80mm; /* Standard thermal receipt paper size */
+        margin: 0;
+        padding: 10px;
+        background: white;
+        color: black;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .receipt-align-right {
+        text-align: right;
+      }
+      .receipt-divider {
+        border-top: 1px dashed black;
+        margin: 8px 0;
+      }
+      .receipt-item-row {
+        display: flex;
+        justify-content: space-between;
+      }
+      .receipt-header {
+        text-align: center;
+        margin-bottom: 15px;
+      }
+      .receipt-footer {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 11px;
+      }
+      .receipt-qr-center {
+        display: flex;
+        justify-content: center;
+        margin: 12px 0;
+      }
+      .receipt-qr-center img {
+        width: 120px;
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hidden Area specifically for thermal printing -->
+  <div id="print-receipt-area"></div>
+
+  <!-- Global Header Navigation -->
+  <header>
+    <div class="container header-content">
+      <div class="brand">
+        <div class="brand-logo">
+          <!-- Coffee Mug SVG icon -->
+          <svg viewBox="0 0 24 24">
+            <path d="M2,21H20V19H2M20,8H18V5H20M20,3H4v13A4,4 0 0,0 8,20H12A4,4 0 0,0 16,16v-2h2a2,2 0 0,0 2-2V8A2,2 0 0,0 20,6V3Z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">MOONBUCKS</h1>
+          <div class="brand-tagline">Café POS Terminal</div>
+        </div>
+      </div>
+
+      <nav class="nav-tabs">
+        <button class="nav-tab active" onclick="switchView('pos')" id="tab-pos">
+          <!-- Monitor POS icon -->
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M22,9V7A2,2 0 0,0 20,5H4A2,2 0 0,0 2,7V17A2,2 0 0,0 4,19H10V21H14V19H20A2,2 0 0,0 22,17V15H12V9H22M20,17H4V7H12v2H20V17Z"/>
+          </svg>
+          POS Terminal
+        </button>
+        <button class="nav-tab" onclick="switchView('manage')" id="tab-manage">
+          <!-- Database Settings icon -->
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12,3C7.58,3 4,4.79 4,7C4,9.21 7.58,11 12,11C16.42,11 20,9.21 20,7C20,4.79 16.42,3 12,3M4,9v3c0,2.21 3.58,4 8,4c4.42,0 8,-1.79 8,-4V9C20,11.21 16.42,13 12,13C7.58,13 4,11.21 4,9M4,14v3c0,2.21 3.58,4 8,4c4.42,0 8,-1.79 8,-4V14C20,16.21 16.42,18 12,18C7.58,18 4,16.21 4,14Z"/>
+          </svg>
+          Manage Menu
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <div class="container">
+    <main>
+      
+      <!-- ----------------------------------------------------
+           VIEW A: POS TERMINAL
+           ---------------------------------------------------- -->
+      <section id="view-pos" class="pos-layout">
+        
+        <!-- Left: Search, Filters & Product Grid -->
+        <div class="menu-column">
+          
+          <div class="filter-search-container">
+            <!-- Search bar -->
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="search-input" class="search-input" placeholder="Search menu items by name..." oninput="handleFilterChange()">
+            </div>
+
+            <!-- Category Filters -->
+            <div class="categories" id="category-filter-pills">
+              <button class="category-btn active" onclick="filterCategory('All', this)">All Menu</button>
+              <button class="category-btn" onclick="filterCategory('Snacks', this)">Snacks</button>
+              <button class="category-btn" onclick="filterCategory('Junk Foods', this)">Junk Foods</button>
+              <button class="category-btn" onclick="filterCategory('Beverages', this)">Beverages</button>
+              <button class="category-btn" onclick="filterCategory('Desserts', this)">Desserts</button>
+            </div>
+          </div>
+
+          <!-- Live Menu Grid -->
+          <div class="menu-grid" id="menu-grid-content">
+            <!-- Loaded dynamically in JS -->
+          </div>
+        </div>
+
+        <!-- Right: Sticky Live Checkout Cart -->
+        <aside class="cart-panel">
+          <div class="cart-header">
+            <h3>
+              <!-- Shopping Basket SVG -->
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.21,9l-4.38-6.56c-0.19-0.28-0.51-0.42-0.83-0.42c-0.32,0-0.64,0.14-0.83,0.41L6.79,9H2v2h10v11h2V11h8V9H17.21z M9,9l3-4.5L15,9H9z"/>
+              </svg>
+              Live Checkout
+            </h3>
+            <span class="cart-badge-count" id="cart-item-count">0 Items</span>
+          </div>
+
+          <!-- Scrollable Item List -->
+          <div class="cart-items" id="cart-items-content">
+            <!-- Filled dynamically -->
+          </div>
+
+          <!-- Total Calculation Footer -->
+          <div class="cart-footer">
+            <div class="bill-row">
+              <span>Subtotal</span>
+              <span id="cart-subtotal">₹0.00</span>
+            </div>
+            <div class="bill-row">
+              <span>Tax (8%)</span>
+              <span id="cart-tax">₹0.00</span>
+            </div>
+            <div class="bill-row grand-total">
+              <span>Grand Total</span>
+              <span id="cart-total">₹0.00</span>
+            </div>
+
+            <div class="cart-actions">
+              <!-- Clear Cart -->
+              <button class="btn-clear" onclick="confirmClearCart()" id="btn-clear-cart" title="Empty the entire shopping cart">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                </svg>
+                Clear
+              </button>
+              
+              <!-- Pay Now -->
+              <button class="btn-pay" onclick="triggerCheckout()" id="btn-pay-now" disabled>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4M20,18H4V12H20V18M20,8H4V6H20V8Z"/>
+                </svg>
+                Pay Now
+              </button>
+            </div>
+          </div>
+        </aside>
+
+      </section>
+
+      <!-- ----------------------------------------------------
+           VIEW B: MANAGE MENU (CRUD PORTAL)
+           ---------------------------------------------------- -->
+      <section id="view-manage" class="crud-layout" style="display: none;">
+        
+        <!-- Left: Form to Add/Edit Item -->
+        <div class="crud-card">
+          <h3 id="form-action-title">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+            </svg>
+            Add New Menu Item
+          </h3>
+          
+          <form id="menu-crud-form" onsubmit="handleFormSubmit(event)">
+            <!-- Hidden field to check if we are editing -->
+            <input type="hidden" id="form-item-id" value="">
+
+            <div class="form-group">
+              <label for="item-name">Item Name</label>
+              <input type="text" id="item-name" class="form-control" required placeholder="e.g. Honey Waffles">
+            </div>
+
+            <div class="form-group">
+              <label for="item-category">Category</label>
+              <select id="item-category" class="form-control" required>
+                <option value="" disabled selected>Select Category</option>
+                <option value="Snacks">Snacks</option>
+                <option value="Junk Foods">Junk Foods</option>
+                <option value="Beverages">Beverages</option>
+                <option value="Desserts">Desserts</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="item-price">Price (₹)</label>
+              <input type="number" id="item-price" class="form-control" step="1" min="1" required placeholder="e.g. 150">
+            </div>
+
+            <div class="form-group">
+              <label for="item-image">Image URL</label>
+              <input type="url" id="item-image" class="form-control" placeholder="Paste Unsplash / Picsum / direct link" oninput="updateFormImagePreview(this.value)">
+              
+              <!-- Instant image preview -->
+              <div class="image-preview-container">
+                <div id="preview-placeholder" class="image-preview-placeholder">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8.5,13.5L11,16.5L14.5,12L19,18H5L8.5,13.5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19M5,5H19V19H5V5Z"/>
+                  </svg>
+                  <span>No image loaded</span>
+                </div>
+                <img id="form-image-preview" src="" alt="Selected Preview" class="image-preview" style="display: none;" onerror="handlePreviewLoadError()">
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn-submit" id="btn-form-submit">Add Item</button>
+              <button type="button" class="btn-cancel" onclick="resetCrudForm()">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Right: Current Database List with Actions -->
+        <div class="table-container">
+          <table class="crud-table" id="crud-table-display">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="crud-table-tbody">
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ----------------------------------------------------
+       MODAL DIALOG: PAY NOW & RECEIPT PREVIEW
+       ---------------------------------------------------- -->
+  <div class="modal-overlay" id="checkout-modal" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-wrapper">
+      
+      <div class="modal-header">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z"/>
+          </svg>
+          Payment & Receipt
+        </h3>
+        <button class="btn-close-modal" onclick="closeModal()">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Live QR Code Panel -->
+        <div class="qr-container">
+          <img id="qr-code-img" src="" alt="Payment QR Code" class="qr-code-img">
+          <div class="qr-text">Scan to Pay via UPI/App</div>
+        </div>
+
+        <!-- Receipt preview -->
+        <div class="checkout-bill-preview" id="checkout-receipt-body">
+          <!-- Filled dynamically in monospace -->
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-modal-action secondary" onclick="closeModal()">Close</button>
+        <!-- Print Receipt Button -->
+        <button class="btn-modal-action primary" onclick="printReceipt()">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+          </svg>
+          Print Bill
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Float Toast Notices Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ----------------------------------------------------
+       11. JAVASCRIPT POS APP ENGINE
+       ---------------------------------------------------- */ -->
+  <script>
+    // --- 1. LOCAL STORAGE DATABASE INITIALIZATION ---
+    const MENU_STORAGE_KEY = 'cafe_pos_menu_items';
+
+    // 20 realistic pre-populated items
+    const DEFAULT_ITEMS = [
+      // Snacks
+      { id: 's1', name: 'Classic Croissant', price: 120.00, category: 'Snacks', image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&auto=format&fit=crop&q=60' },
+      { id: 's2', name: 'Garlic Herb Bruschetta', price: 180.00, category: 'Snacks', image: 'https://images.unsplash.com/photo-1572656631137-7935297eff55?w=400&auto=format&fit=crop&q=60' },
+      { id: 's3', name: 'Spinach & Feta Bistro Puff', price: 150.00, category: 'Snacks', image: 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=400&auto=format&fit=crop&q=60' },
+      { id: 's4', name: 'Avocado Toast', price: 250.00, category: 'Snacks', image: 'https://images.unsplash.com/photo-1541532713592-79a0317b6b77?w=400&auto=format&fit=crop&q=60' },
+      { id: 's5', name: 'Chicken Club Sandwich', price: 280.00, category: 'Snacks', image: 'https://images.unsplash.com/photo-1567234669003-dce7a7a88821?w=400&auto=format&fit=crop&q=60' },
+
+      // Junk Foods
+      { id: 'j1', name: 'Cheeseburger Deluxe', price: 320.00, category: 'Junk Foods', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&auto=format&fit=crop&q=60' },
+      { id: 'j2', name: 'Loaded BBQ Fries', price: 220.00, category: 'Junk Foods', image: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?w=400&auto=format&fit=crop&q=60' },
+      { id: 'j3', name: 'Crispy Chicken Tenders', price: 290.00, category: 'Junk Foods', image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=400&auto=format&fit=crop&q=60' },
+      { id: 'j4', name: 'Pepperoni Pizza Slice', price: 180.00, category: 'Junk Foods', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&auto=format&fit=crop&q=60' },
+      { id: 'j5', name: 'Mozzarella Sticks', price: 240.00, category: 'Junk Foods', image: 'https://images.unsplash.com/photo-1531749668029-2db88e4b76ce?w=400&auto=format&fit=crop&q=60' },
+
+      // Beverages
+      { id: 'b1', name: 'Caramel Macchiato', price: 210.00, category: 'Beverages', image: 'https://images.unsplash.com/photo-1485808191679-5f86510681a2?w=400&auto=format&fit=crop&q=60' },
+      { id: 'b2', name: 'Iced Matcha Latte', price: 190.00, category: 'Beverages', image: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=400&auto=format&fit=crop&q=60' },
+      { id: 'b3', name: 'Fresh Strawberry Lemonade', price: 140.00, category: 'Beverages', image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400&auto=format&fit=crop&q=60' },
+      { id: 'b4', name: 'Classic Cappuccino', price: 160.00, category: 'Beverages', image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fc9f?w=400&auto=format&fit=crop&q=60' },
+      { id: 'b5', name: 'Mango Smoothie', price: 180.00, category: 'Beverages', image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format&fit=crop&q=60' },
+
+      // Desserts
+      { id: 'd1', name: 'Chocolate Fudge Lava Cake', price: 260.00, category: 'Desserts', image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&auto=format&fit=crop&q=60' },
+      { id: 'd2', name: 'New York Style Cheesecake', price: 240.00, category: 'Desserts', image: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400&auto=format&fit=crop&q=60' },
+      { id: 'd3', name: 'Warm Apple Pie', price: 220.00, category: 'Desserts', image: 'https://images.unsplash.com/photo-1519869325930-281384150729?w=400&auto=format&fit=crop&q=60' },
+      { id: 'd4', name: 'Tiramisu Cup', price: 250.00, category: 'Desserts', image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&auto=format&fit=crop&q=60' },
+      { id: 'd5', name: 'Red Velvet Cupcake', price: 120.00, category: 'Desserts', image: 'https://images.unsplash.com/photo-1614707267537-b85acf00c4b8?w=400&auto=format&fit=crop&q=60' },
+    ];
+
+    // App State
+    let menuItems = [];
+    let cart = [];
+    let activeCategory = 'All';
+
+    // Fallback Image
+    const FALLBACK_IMG = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="%23DDD5C7"><path d="M2 21h18v-2H2M20 8h-2V5h2M20 3H4v13a4 4 0 0 0 4 4h4a4 4 0 0 0 4-4v-2h2a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2V3Z"/></svg>';
+
+    // --- 2. STARTUP OPERATIONS ---
+    window.addEventListener('DOMContentLoaded', () => {
+      loadMenuData();
+      renderMenuGrid();
+      renderCart();
+      renderCrudTable();
+    });
+
+    // Load data from LocalStorage or seed defaults
+    function loadMenuData() {
+      const stored = localStorage.getItem(MENU_STORAGE_KEY);
+      if (stored) {
+        try {
+          menuItems = JSON.parse(stored);
+        } catch (e) {
+          console.error("Failed to parse localstorage menu items, loading defaults.", e);
+          menuItems = [...DEFAULT_ITEMS];
+          saveMenuToStorage();
+        }
+      } else {
+        menuItems = [...DEFAULT_ITEMS];
+        saveMenuToStorage();
+      }
+    }
+
+    function saveMenuToStorage() {
+      localStorage.setItem(MENU_STORAGE_KEY, JSON.stringify(menuItems));
+    }
+
+    // --- 3. TOAST NOTIFICATION CONTROLLER ---
+    function showToast(message, type = 'default') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      // Determine Icon
+      let icon = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg>';
+      if (type === 'success') {
+        icon = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2M10,17L5,12L6.41,10.59L10,14.17L17.59,6.58L19,8L10,17Z"/></svg>';
+      } else if (type === 'danger') {
+        icon = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11,15H13V17H11V15M11,7H13V13H11V7M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20Z"/></svg>';
+      }
+
+      toast.innerHTML = `${icon} <span>${message}</span>`;
+      container.appendChild(toast);
+
+      // Auto dismiss
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(15px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+
+    // --- 4. NAVIGATION VIEW TOGGLE ---
+    function switchView(viewName) {
+      const viewPos = document.getElementById('view-pos');
+      const viewManage = document.getElementById('view-manage');
+      const tabPos = document.getElementById('tab-pos');
+      const tabManage = document.getElementById('tab-manage');
+
+      if (viewName === 'pos') {
+        viewPos.style.display = 'grid';
+        viewManage.style.display = 'none';
+        tabPos.classList.add('active');
+        tabManage.classList.remove('active');
+        renderMenuGrid(); // Refresh grid layout in case items updated
+      } else {
+        viewPos.style.display = 'none';
+        viewManage.style.display = 'grid';
+        tabPos.classList.remove('active');
+        tabManage.classList.add('active');
+        resetCrudForm();
+        renderCrudTable();
+      }
+    }
+
+    // --- 5. POS TERMINAL RENDER & FILTERS ---
+    function filterCategory(categoryName, element) {
+      activeCategory = categoryName;
+      
+      // Update filter pills active state
+      const pills = document.querySelectorAll('#category-filter-pills .category-btn');
+      pills.forEach(pill => pill.classList.remove('active'));
+      element.classList.add('active');
+
+      renderMenuGrid();
+    }
+
+    function handleFilterChange() {
+      renderMenuGrid();
+    }
+
+    function getFilteredItems() {
+      const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+      
+      return menuItems.filter(item => {
+        const matchesCategory = (activeCategory === 'All' || item.category === activeCategory);
+        const matchesSearch = item.name.toLowerCase().includes(searchVal);
+        return matchesCategory && matchesSearch;
+      });
+    }
+
+    function renderMenuGrid() {
+      const grid = document.getElementById('menu-grid-content');
+      const filtered = getFilteredItems();
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.5,14h-.79l-.28-.27C15.41,12.59,16,11.11,16,9.5,16,5.91,13.09,3,9.5,3,5.91,3,3,5.91,3,9.5,3,13.09,5.91,16,9.5,16c1.61,0,3.09-.59,4.23-1.57l.27.28v.79l5,4.99L20.49,19l-4.99-5Zm-6,0C7.01,14,5,11.99,5,9.5S7.01,5,9.5,5,14,7.01,14,9.5,11.99,14,9.5,14Z"/>
+            </svg>
+            <p>No matching cafe items found.</p>
+          </div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const itemImage = item.image ? item.image : FALLBACK_IMG;
+        return `
+          <div class="menu-card" data-id="${item.id}">
+            <span class="card-badge">${item.category}</span>
+            <div class="card-img-container">
+              <img class="card-img" src="${itemImage}" alt="${item.name}" loading="lazy" onerror="this.onerror=null; this.src='${FALLBACK_IMG}';">
+            </div>
+            <div class="card-details">
+              <div class="card-info">
+                <div class="card-title">${escapeHTML(item.name)}</div>
+                <div class="card-price">₹${item.price.toFixed(2)}</div>
+              </div>
+              <button class="btn-add" onclick="addToCart('${item.id}')">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                </svg>
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- 6. SHOPPING CART ENGINE ---
+    function addToCart(itemId) {
+      const item = menuItems.find(i => i.id === itemId);
+      if (!item) return;
+
+      const cartIndex = cart.findIndex(c => c.id === itemId);
+
+      if (cartIndex > -1) {
+        cart[cartIndex].qty += 1;
+      } else {
+        cart.push({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          qty: 1
+        });
+      }
+
+      showToast(`Added ${item.name} to cart`, 'success');
+      renderCart();
+    }
+
+    function changeQty(itemId, change) {
+      const cartIndex = cart.findIndex(c => c.id === itemId);
+      if (cartIndex === -1) return;
+
+      cart[cartIndex].qty += change;
+
+      if (cart[cartIndex].qty <= 0) {
+        const removedName = cart[cartIndex].name;
+        cart.splice(cartIndex, 1);
+        showToast(`Removed ${removedName} from cart`, 'danger');
+      }
+
+      renderCart();
+    }
+
+    function removeFromCart(itemId) {
+      const cartIndex = cart.findIndex(c => c.id === itemId);
+      if (cartIndex === -1) return;
+
+      const removedName = cart[cartIndex].name;
+      cart.splice(cartIndex, 1);
+      showToast(`Removed ${removedName} from cart`, 'danger');
+      renderCart();
+    }
+
+    function confirmClearCart() {
+      if (cart.length === 0) return;
+
+      const confirmed = confirm("Are you sure you want to empty the shopping cart?");
+      if (confirmed) {
+        cart = [];
+        renderCart();
+        showToast("Cart emptied successfully", "danger");
+      }
+    }
+
+    function calculateTotals() {
+      let subtotal = 0;
+      let count = 0;
+
+      cart.forEach(item => {
+        subtotal += item.price * item.qty;
+        count += item.qty;
+      });
+
+      const taxRate = 0.08; // 8% Tax
+      const tax = subtotal * taxRate;
+      const total = subtotal + tax;
+
+      return {
+        subtotal,
+        tax,
+        total,
+        count
+      };
+    }
+
+    function renderCart() {
+      const cartContent = document.getElementById('cart-items-content');
+      const subtotalEl = document.getElementById('cart-subtotal');
+      const taxEl = document.getElementById('cart-tax');
+      const totalEl = document.getElementById('cart-total');
+      const countEl = document.getElementById('cart-item-count');
+      const payButton = document.getElementById('btn-pay-now');
+
+      const totals = calculateTotals();
+
+      // Update Badge count
+      countEl.innerText = `${totals.count} Item${totals.count !== 1 ? 's' : ''}`;
+
+      // Disable/Enable Checkout pay button
+      if (cart.length === 0) {
+        payButton.disabled = true;
+        cartContent.innerHTML = `
+          <div class="cart-empty">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" style="display:none;"/>
+              <path d="M17.21,9l-4.38-6.56c-0.19-0.28-0.51-0.42-0.83-0.42c-0.32,0-0.64,0.14-0.83,0.41L6.79,9H2v2h10v11h2V11h8V9H17.21z M9,9l3-4.5L15,9H9z" opacity="0.3"/>
+            </svg>
+            <p>Your cart is empty.</p>
+            <span style="font-size: 0.75rem; color: var(--text-light)">Select food items from the menu to start checkout</span>
+          </div>`;
+      } else {
+        payButton.disabled = false;
+        cartContent.innerHTML = cart.map(item => `
+          <div class="cart-item">
+            <div class="cart-item-info">
+              <div class="cart-item-name" title="${escapeHTML(item.name)}">${escapeHTML(item.name)}</div>
+              <div class="cart-item-price">₹${item.price.toFixed(2)}</div>
+            </div>
+            
+            <div class="cart-qty-ctrl">
+              <button class="qty-btn" onclick="changeQty('${item.id}', -1)" title="Decrease Quantity">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19,13H5V11H19V13Z"/></svg>
+              </button>
+              <span class="qty-val">${item.qty}</span>
+              <button class="qty-btn" onclick="changeQty('${item.id}', 1)" title="Increase Quantity">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg>
+              </button>
+            </div>
+            
+            <div class="cart-item-total">
+              ₹${(item.price * item.qty).toFixed(2)}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Render total calculations
+      subtotalEl.innerText = `₹${totals.subtotal.toFixed(2)}`;
+      taxEl.innerText = `₹${totals.tax.toFixed(2)}`;
+      totalEl.innerText = `₹${totals.total.toFixed(2)}`;
+    }
+
+    // --- 7. CHECKOUT & PRINTING CONTROLLER ---
+    function triggerCheckout() {
+      if (cart.length === 0) return;
+
+      const totals = calculateTotals();
+      const dateStr = new Date().toLocaleString();
+      
+      // 1. Build Receipt content (rendered inside modal and printed container)
+      let itemsString = cart.map(item => {
+        // Pad item name and amount for nice monospaced alignment
+        const namePart = item.name.substring(0, 16);
+        const qtyPart = `x${item.qty}`;
+        const totalPart = `₹${(item.price * item.qty).toFixed(2)}`;
+        
+        // alignment spacing
+        const lineText = `${namePart.padEnd(16)} ${qtyPart.padStart(4)} ${totalPart.padStart(10)}`;
+        return lineText;
+      }).join('\n');
+
+      const receiptHTML = `
+<div class="checkout-bill-header">
+  <div class="checkout-bill-title">MOONBUCKS</div>
+  <div>100 Brew Street, Roast City</div>
+  <div>Tel: (555) 019-2831</div>
+</div>
+<div class="checkout-bill-info">
+  <span>Date:</span>
+  <span>${dateStr}</span>
+</div>
+<div class="checkout-bill-info" style="margin-bottom: 8px;">
+  <span>Receipt ID:</span>
+  <span>#${Math.floor(100000 + Math.random() * 900000)}</span>
+</div>
+<div class="checkout-divider"></div>
+<div class="checkout-bill-items">
+${escapeHTML(itemsString)}
+</div>
+<div class="checkout-bill-totals">
+  <div class="checkout-bill-total-row">
+    <span>Subtotal:</span>
+    <span>₹${totals.subtotal.toFixed(2)}</span>
+  </div>
+  <div class="checkout-bill-total-row">
+    <span>Tax (8.0%):</span>
+    <span>₹${totals.tax.toFixed(2)}</span>
+  </div>
+  <div class="checkout-bill-total-row grand">
+    <span>GRAND TOTAL:</span>
+    <span>₹${totals.total.toFixed(2)}</span>
+  </div>
+</div>
+<div style="text-align: center; margin-top: 15px; font-size: 0.75rem; color: #555555;">
+  Thank you for dining with us!<br>Come back soon!
+</div>
+      `;
+
+      // Set Receipt details inside Modal
+      document.getElementById('checkout-receipt-body').innerHTML = receiptHTML;
+
+      // 2. Build QR Code Payload (API request)
+      // We will pack basic receipt text into the QR code
+      const qrDataText = `MOONBUCKS Receipt\nTotal: ₹${totals.total.toFixed(2)}\nItems:\n` + 
+                          cart.map(i => `${i.name} (${i.qty})`).join(', ');
+      
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=10&data=${encodeURIComponent(qrDataText)}`;
+      document.getElementById('qr-code-img').src = qrUrl;
+
+      // 3. Populate Thermal Print Receipt Container
+      const printContainer = document.getElementById('print-receipt-area');
+      printContainer.innerHTML = `
+        <div class="receipt-header">
+          <div style="font-size: 16px; font-weight: bold; text-transform: uppercase;">MOONBUCKS</div>
+          <div style="font-size: 10px;">100 Brew Street, Roast City</div>
+          <div style="font-size: 10px;">Tel: (555) 019-2831</div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-item-row" style="font-size: 10px;">
+            <span>Date: ${dateStr}</span>
+          </div>
+          <div class="receipt-item-row" style="font-size: 10px;">
+            <span>Receipt: #${Math.floor(100000 + Math.random() * 900000)}</span>
+          </div>
+        </div>
+        <div class="receipt-divider"></div>
+        <div style="font-size: 11px;">
+          ${cart.map(item => `
+            <div class="receipt-item-row">
+              <span>${escapeHTML(item.name.substring(0, 16))}</span>
+              <span>x${item.qty} ₹${(item.price * item.qty).toFixed(2)}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="receipt-divider"></div>
+        <div style="font-size: 12px; font-weight: bold;">
+          <div class="receipt-item-row">
+            <span>Subtotal:</span>
+            <span>₹${totals.subtotal.toFixed(2)}</span>
+          </div>
+          <div class="receipt-item-row">
+            <span>Tax (8%):</span>
+            <span>₹${totals.tax.toFixed(2)}</span>
+          </div>
+          <div class="receipt-item-row" style="font-size: 13px;">
+            <span>TOTAL:</span>
+            <span>₹${totals.total.toFixed(2)}</span>
+          </div>
+        </div>
+        <div class="receipt-divider"></div>
+        <div class="receipt-qr-center">
+          <img src="${qrUrl}" alt="Print QR">
+        </div>
+        <div class="receipt-footer">
+          Thank you for dining with us!<br>
+          We appreciate your business.<br>
+          Have a wonderful day!
+        </div>
+      `;
+
+      // Open Modal Overlay
+      document.getElementById('checkout-modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('checkout-modal').classList.remove('active');
+    }
+
+    function closeModalOnBackdrop(e) {
+      if (e.target.id === 'checkout-modal') {
+        closeModal();
+      }
+    }
+
+    function printReceipt() {
+      // Trigger Window native print dialog
+      window.print();
+    }
+
+    // --- 8. MANAGE MENU PORTAL (CRUD CONTROLLER) ---
+    function renderCrudTable() {
+      const tbody = document.getElementById('crud-table-tbody');
+      
+      tbody.innerHTML = menuItems.map(item => `
+        <tr>
+          <td>
+            <img class="table-img" src="${item.image ? item.image : FALLBACK_IMG}" alt="${item.name}" onerror="this.onerror=null; this.src='${FALLBACK_IMG}';">
+          </td>
+          <td style="font-weight: 500; color: var(--secondary);">${escapeHTML(item.name)}</td>
+          <td><span class="card-badge" style="position: static; display: inline-block;">${item.category}</span></td>
+          <td class="table-price">₹${item.price.toFixed(2)}</td>
+          <td>
+            <div class="action-btn-group">
+              <!-- Edit Button -->
+              <button class="action-btn edit-btn" onclick="startEditItem('${item.id}')" title="Edit Item Details">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21h3.75L17.81,9.93L14.07,6.18L3,17.25Z"/>
+                </svg>
+              </button>
+              
+              <!-- Delete Button -->
+              <button class="action-btn delete-btn" onclick="deleteItem('${item.id}')" title="Delete Item">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Update the live image preview in the CRUD form
+    function updateFormImagePreview(url) {
+      const img = document.getElementById('form-image-preview');
+      const placeholder = document.getElementById('preview-placeholder');
+
+      if (url && url.trim() !== "") {
+        img.src = url;
+        img.style.display = 'block';
+        placeholder.style.display = 'none';
+      } else {
+        img.src = "";
+        img.style.display = 'none';
+        placeholder.style.display = 'flex';
+      }
+    }
+
+    function handlePreviewLoadError() {
+      const img = document.getElementById('form-image-preview');
+      const placeholder = document.getElementById('preview-placeholder');
+      
+      img.style.display = 'none';
+      placeholder.style.display = 'flex';
+      placeholder.querySelector('span').innerText = 'Image load failed';
+    }
+
+    function startEditItem(itemId) {
+      const item = menuItems.find(i => i.id === itemId);
+      if (!item) return;
+
+      // Fill Form inputs
+      document.getElementById('form-item-id').value = item.id;
+      document.getElementById('item-name').value = item.name;
+      document.getElementById('item-category').value = item.category;
+      document.getElementById('item-price').value = item.price.toFixed(2);
+      document.getElementById('item-image').value = item.image || '';
+
+      updateFormImagePreview(item.image);
+
+      // Change Form Title & Button text
+      document.getElementById('form-action-title').innerHTML = `
+        <svg viewBox="0 0 24 24" fill="currentColor" style="color: var(--primary);">
+          <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21h3.75L17.81,9.93L14.07,6.18L3,17.25Z"/>
+        </svg>
+        Edit Menu Item
+      `;
+      document.getElementById('btn-form-submit').innerText = 'Update Item';
+      
+      showToast(`Editing ${item.name}`, 'default');
+    }
+
+    function deleteItem(itemId) {
+      const item = menuItems.find(i => i.id === itemId);
+      if (!item) return;
+
+      const confirmed = confirm(`Are you sure you want to delete "${item.name}"?`);
+      if (confirmed) {
+        // Remove item from database
+        menuItems = menuItems.filter(i => i.id !== itemId);
+        saveMenuToStorage();
+
+        // Also check if item is in the cart and remove it
+        const cartIndex = cart.findIndex(c => c.id === itemId);
+        if (cartIndex > -1) {
+          cart.splice(cartIndex, 1);
+          renderCart();
+        }
+
+        renderCrudTable();
+        showToast(`Deleted "${item.name}"`, 'danger');
+        
+        // Reset form just in case they were editing the deleted item
+        if (document.getElementById('form-item-id').value === itemId) {
+          resetCrudForm();
+        }
+      }
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+
+      const itemId = document.getElementById('form-item-id').value.trim();
+      const name = document.getElementById('item-name').value.trim();
+      const category = document.getElementById('item-category').value;
+      const price = parseFloat(document.getElementById('item-price').value);
+      const image = document.getElementById('item-image').value.trim();
+
+      if (!name || !category || isNaN(price) || price <= 0) {
+        showToast("Please fill in valid menu details", "danger");
+        return;
+      }
+
+      if (itemId) {
+        // Update Operation
+        const index = menuItems.findIndex(i => i.id === itemId);
+        if (index > -1) {
+          menuItems[index] = {
+            id: itemId,
+            name,
+            category,
+            price,
+            image: image || null
+          };
+
+          // Update corresponding values in active cart
+          const cartIndex = cart.findIndex(c => c.id === itemId);
+          if (cartIndex > -1) {
+            cart[cartIndex].name = name;
+            cart[cartIndex].price = price;
+            renderCart();
+          }
+
+          showToast(`Updated "${name}"`, 'success');
+        }
+      } else {
+        // Create Operation
+        const newItem = {
+          id: 'item_' + Date.now(),
+          name,
+          category,
+          price,
+          image: image || null
+        };
+        menuItems.unshift(newItem); // Add new item to front of menu
+        showToast(`Added "${name}" to menu`, 'success');
+      }
+
+      saveMenuToStorage();
+      resetCrudForm();
+      renderCrudTable();
+    }
+
+    function resetCrudForm() {
+      // Clear inputs
+      document.getElementById('menu-crud-form').reset();
+      document.getElementById('form-item-id').value = '';
+      
+      // Reset image preview
+      updateFormImagePreview('');
+      
+      // Reset form buttons and headings
+      document.getElementById('form-action-title').innerHTML = `
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+        </svg>
+        Add New Menu Item
+      `;
+      document.getElementById('btn-form-submit').innerText = 'Add Item';
+    }
+
+    // --- 9. HELPER SECURITY ESCAPING ---
+    function escapeHTML(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
